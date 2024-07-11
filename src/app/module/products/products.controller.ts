@@ -1,13 +1,11 @@
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import { sendResponse } from '../../utils/sendResponse';
-import { CarServices } from './products.service';
+import { ProductService } from './products.service';
 
 //create car by admin
-const createCar = catchAsync(async (req, res) => {
-  const body = req.body;
-
-  const result = await CarServices.createCarIntoDB(body);
+const createProduct = catchAsync(async (req, res) => {
+  const result = await ProductService.createProductIntoDB(req, res);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -16,31 +14,21 @@ const createCar = catchAsync(async (req, res) => {
     data: result,
   });
 });
-
-//get all car
-const getAllCars = catchAsync(async (req, res) => {
-  const result = await CarServices.getCarFromDB();
-  if (!result.length) {
-    return sendResponse(res, {
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: 'No Data Found',
-      data: [],
-    });
-  }
-
+//get all product
+const getAllProducts = catchAsync(async (req, res) => {
+  const result = await ProductService.getAllProductsFromDB();
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Car retrieved successfully',
+    message: 'Cars fetched successfully',
     data: result,
   });
 });
 
-//get single car
-const getACar = catchAsync(async (req, res) => {
+//get single product
+const getAProduct = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const result = await CarServices.getACarFromDB(id);
+  const result = await ProductService.getAProductFromDB(id);
   if (!result || result.isDeleted === true) {
     return sendResponse(res, {
       statusCode: httpStatus.NOT_FOUND,
@@ -55,75 +43,133 @@ const getACar = catchAsync(async (req, res) => {
     message: 'Car retrieved successfully',
     data: result,
   });
-});
+})
 
-//update a car by admin
-const updateCar = catchAsync(async (req, res) => {
+//update product
+const updateProduct = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const body = req.body;
-  const result = await CarServices.updateACarIntoDB(id, body, res);
+  const result = await ProductService.updateProductIntoDB(id, req, res);
   if (!result) {
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: httpStatus.NOT_FOUND,
       success: false,
-      message: 'Car not found',
+      message: 'No Data Found',
       data: [],
     });
   }
-
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Car updated successfully',
     data: result,
   });
-});
+})
+
+//get all car
+// const getAllCars = catchAsync(async (req, res) => {
+//   const result = await CarServices.getCarFromDB();
+//   if (!result.length) {
+//     return sendResponse(res, {
+//       statusCode: httpStatus.NOT_FOUND,
+//       success: false,
+//       message: 'No Data Found',
+//       data: [],
+//     });
+//   }
+
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'Car retrieved successfully',
+//     data: result,
+//   });
+// });
+
+//get single car
+// const getACar = catchAsync(async (req, res) => {
+//   const id = req.params.id;
+//   const result = await CarServices.getACarFromDB(id);
+//   if (!result || result.isDeleted === true) {
+//     return sendResponse(res, {
+//       statusCode: httpStatus.NOT_FOUND,
+//       success: false,
+//       message: 'No Data Found',
+//       data: [],
+//     });
+//   }
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'Car retrieved successfully',
+//     data: result,
+//   });
+// });
+
+//update a car by admin
+// const updateCar = catchAsync(async (req, res) => {
+//   const id = req.params.id;
+//   const body = req.body;
+//   const result = await CarServices.updateACarIntoDB(id, body, res);
+//   if (!result) {
+//     sendResponse(res, {
+//       statusCode: httpStatus.NOT_FOUND,
+//       success: false,
+//       message: 'Car not found',
+//       data: [],
+//     });
+//   }
+
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'Car updated successfully',
+//     data: result,
+//   });
+// });
 
 //Return The Car (Only Accessible To Admin)
-const returnCar = catchAsync(async (req, res) => {
-  const result = await CarServices.returnTheCarIntoDB(req, res);
-  if (!result) {
-    sendResponse(res, {
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: 'Car not found',
-      data: [],
-    });
-  }
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Car returned successfully',
-    data: result,
-  });
-});
+// const returnCar = catchAsync(async (req, res) => {
+//   const result = await CarServices.returnTheCarIntoDB(req, res);
+//   if (!result) {
+//     sendResponse(res, {
+//       statusCode: httpStatus.NOT_FOUND,
+//       success: false,
+//       message: 'Car not found',
+//       data: [],
+//     });
+//   }
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'Car returned successfully',
+//     data: result,
+//   });
+// });
 
 //soft delete a car by admin
-const deleteACarIntoDB = catchAsync(async (req, res) => {
-  const id = req.params.id;
-  const result = await CarServices.deleteACarIntoDB(id, res);
-  if (!result) {
-    sendResponse(res, {
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: 'Car not found',
-      data: [],
-    });
-  }
+// const deleteACarIntoDB = catchAsync(async (req, res) => {
+//   const id = req.params.id;
+//   const result = await CarServices.deleteACarIntoDB(id, res);
+//   if (!result) {
+//     sendResponse(res, {
+//       statusCode: httpStatus.NOT_FOUND,
+//       success: false,
+//       message: 'Car not found',
+//       data: [],
+//     });
+//   }
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Car deleted successfully',
-    data: result,
-  });
-});
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'Car deleted successfully',
+//     data: result,
+//   });
+// });
 //export car controller
-export const carController = {
-  createCar,
-  getAllCars,
-  getACar,
-  updateCar,
-  deleteACarIntoDB,
-  returnCar,
+export const ProductController = {
+  createProduct,
+  getAllProducts,
+  getAProduct,
+  updateProduct,
 };

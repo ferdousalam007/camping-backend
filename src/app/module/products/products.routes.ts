@@ -1,33 +1,49 @@
 import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import { carValidations } from './products.validation';
-import { carController } from './products.controller';
+import { productValidations } from './products.validation';
+import { ProductController } from './products.controller';
 const router = express.Router();
 
-//create car by admin route
+//create product route
 router.post(
   '/',
 
-  validateRequest(carValidations.createCarValidationSchema),
-  carController.createCar,
+  validateRequest(productValidations.createProductValidationSchema),
+  ProductController.createProduct,
 );
+//get all product route
+router.get('/', ProductController.getAllProducts);
+
+//get single product route
+router.get('/:id', ProductController.getAProduct);
+
+//update product route
+router.put(
+  '/:id',
+  validateRequest(productValidations.updatedProductValidationSchema),
+  ProductController.updateProduct,
+);
+
+//delete product route
+// router.delete('/:id', ProductController.deleteProduct);
+
 //get all car by all
-router.get('/', carController.getAllCars);
+// router.get('/', carController.getAllCars);
 
 //return car by admin
 
 //update car by admin
-router.put(
-  '/:id',
+// router.put(
+//   '/:id',
 
-  validateRequest(carValidations.updatedCarValidationSchema),
-  carController.updateCar,
-);
+//   validateRequest(productValidations.updatedProductValidationSchema),
+//   carController.updateCar,
+// );
 //get single car by all
-router.get('/:id', carController.getACar);
+// router.get('/:id', carController.getACar);
 
 //delete car by admin
-router.delete('/:id', carController.deleteACarIntoDB);
+// router.delete('/:id', carController.deleteACarIntoDB);
 
 //export car routes
 export const ProductRoutes = router;

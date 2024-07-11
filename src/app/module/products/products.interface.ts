@@ -1,14 +1,16 @@
-import { USER_ROLE } from './products.constant';
+import { Types } from "mongoose";
+
 
 //create type in typescript
-export type TCar = {
-  name: string;
-  description: string;
-  color: string;
-  isElectric: boolean;
-  status: 'available' | 'unavailable'; // Assuming 'available' and 'unavailable' are the only statuses
-  features: string[];
-  pricePerHour: number;
-  isDeleted: boolean;
+export type TProduct = {
+  name: string; 
+  price: number; 
+  stock: number; 
+  description?: string; 
+  category: Types.ObjectId; 
+  ratings: number; 
+  imageUrl: string;
+  featured?: boolean;
+  recommended?: boolean;
 };
-export type TUserRole = keyof typeof USER_ROLE;
+

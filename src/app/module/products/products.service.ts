@@ -3,15 +3,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
-import { Booking } from '../booking/booking.model';
-import { TCar } from './products.interface';
-import { Car } from './products.model';
+
 import mongoose from 'mongoose';
 import { sendResponse } from '../../utils/sendResponse';
+import cloudinary from '../../utils/cloudinary';
+import { v4 as uuidv4 } from 'uuid';
+import { Category } from '../category/category.model';
+import { Product } from './products.model';
+import { TProduct } from './products.interface';
+//create a product into database
+const createProductIntoDB = async (req: any,res:any) => {
+  const parsedProduct = req.body;
+  if (!req.files || !req.files.image) {
+    return res.status(400).json({ message: 'Image file is required' });
+  }
 
-//create a car into database by admin
-const createCarIntoDB = async (payload: TCar) => {
-  const result = await Car.create(payload);
+  const image = req.files.image as any; // Type assertion to any
+  const result = await cloudinary.uploader.upload(image.tempFilePath, {
+    folder: 'campers-shop/products',
+    public_id: uuidv4(),
+  });
+
+  const categoryExists = await Category.findById(parsedProduct.category);
+  if (!categoryExists) {
+    return res.status(400).json({ message: 'Category does not exist' });
+  }
+
+  const newProduct = new Product({
+    ...parsedProduct,
+    imageUrl: result.secure_url,
+  });
+
+ const newResult= (await newProduct.save()).populate('category');
+
+  return newResult;
+};
+
+//get all product from database
+const getAllProductsFromDB = async () => {
+  const result = await Product.find().populate('category');
   if (!result) {
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
@@ -21,149 +51,41 @@ const createCarIntoDB = async (payload: TCar) => {
   return result;
 };
 
-//get single car from database
-const getCarFromDB = async () => {
-  const result = await Car.find({ isDeleted: false });
-  return result;
-};
-//Get A Car from database by all
-const getACarFromDB = async (id: string) => {
-  const result = await Car.findById(id);
-  return result;
-};
-//Update A Car from database by admin
-const updateACarIntoDB = async (id: string, payload: TCar, res: any) => {
-  const carId = await Car.findById(id);
-  if (!carId) {
-    sendResponse(res, {
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: 'Car not found',
-      data: [],
-    });
-  }
-  const result = await Car.findByIdAndUpdate(id, payload, { new: true });
+//get single product from database
+const getAProductFromDB = async (id: string) => {
+  const result = await Product.findById(id).populate('category');
   if (!result) {
-    sendResponse(res, {
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: 'Car not found',
-      data: [],
-    });
-  }
-  return result;
-};
-//Delete A Car from database by admin
-const deleteACarIntoDB = async (id: string, res: any) => {
-  const findDeletedCar = await Car.findById(id);
-  if (findDeletedCar?.isDeleted) {
-    sendResponse(res, {
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: 'Car not found',
-      data: [],
-    });
-  }
-  const result = await Car.findByIdAndUpdate(
-    id,
-    { isDeleted: true },
-    { new: true },
-  );
-  return result;
-};
-//Return The Car only accesalble by admin
-const returnTheCarIntoDB = async (req: any, res: any) => {
-  const bookingId = req.body.bookingId;
-  const endTime = req.body.endTime;
-  const checkIsBooked = await Booking.findById(bookingId);
-  if (!checkIsBooked) {
-    sendResponse(res, {
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: 'Booking not found',
-      data: [],
-    });
-  }
-  if (checkIsBooked?.endTime) {
     throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'this booking already return your car',
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Something went wrong',
     );
   }
-  const findCar = await Car.findById(checkIsBooked?.car);
-
-  if (!findCar) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Car not found');
+  return result;
+}
+//update product into database
+const updateProductIntoDB = async (id: string, req: any, res: any) => {
+  const parsedProduct = req.body;
+  const categoryExists = await Category.findById(parsedProduct.category);
+  if (!categoryExists) {
+    return res.status(400).json({ message: 'Category does not exist' });
   }
-  // Convert start and end times to Date objects
-  const startDate = timeCalc(checkIsBooked?.startTime);
-  const endDate = timeCalc(endTime);
-  if (endDate <= startDate) {
+  const result = await Product.findByIdAndUpdate(id, parsedProduct, {
+    new: true,
+  }).populate('category');
+  if (!result) {
     throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'End time cannot be before or equal to start time',
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Something went wrong',
     );
   }
-  // Calculate the difference in milliseconds
-  const diffInMilliseconds = endDate.getTime() - startDate.getTime();
-  // Convert the difference from milliseconds to hours
-  const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
-  // Calculate the total cost
-  const totalCost = diffInHours * findCar?.pricePerHour;
-  const session = await mongoose.startSession();
-  if (endTime) {
-    try {
-      session.startTransaction();
+  return result;
+}
 
-      const carUpdate = await Car.findByIdAndUpdate(
-        checkIsBooked?.car._id,
-        { status: 'available' },
-        { new: true, session },
-      );
-      if (!carUpdate) {
-        throw new AppError(
-          httpStatus.BAD_REQUEST,
-          'failed to update car startus',
-        );
-      }
-      const bookingUpdate = await Booking.findByIdAndUpdate(
-        bookingId,
-        { endTime: endTime, totalCost: totalCost },
-        { new: true, session },
-      )
-        .populate('car')
-        .populate({
-          path: 'user',
-          select: { name: 1, email: 1, address: 1, role: 1, phone: 1 },
-        });
-      if (!bookingUpdate) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'failed to update booking');
-      }
-      await session.commitTransaction();
-      await session.endSession();
-      return bookingUpdate;
-    } catch (err) {
-      await session.abortTransaction();
-      throw new AppError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        'Failed to update Return Car',
-      );
-    }
-  }
 
-  function timeCalc(timeString: any) {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
-    return date;
-  }
-};
 // export all functions
-export const CarServices = {
-  createCarIntoDB,
-  getCarFromDB,
-  getACarFromDB,
-  updateACarIntoDB,
-  deleteACarIntoDB,
-  returnTheCarIntoDB,
+export const ProductService = {
+  createProductIntoDB,
+  getAllProductsFromDB,
+  getAProductFromDB,
+  updateProductIntoDB
 };

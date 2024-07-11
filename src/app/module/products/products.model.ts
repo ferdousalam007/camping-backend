@@ -1,51 +1,51 @@
 import mongoose, { Schema } from 'mongoose';
-import { TCar } from './products.interface';
+import { TProduct } from './products.interface';
 
-const carSchema = new Schema<TCar>(
+const productSchema = new Schema<TProduct>(
   {
     name: {
       type: String,
       required: true,
       trim: true,
     },
+    price: {
+      type: Number,
+      required: true,
+    },
+    stock: {
+      type: Number,
+      required: true,
+    },
     description: {
       type: String,
       required: true,
       trim: true,
     },
-    color: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    isElectric: {
-      type: Boolean,
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category', 
       required: true,
     },
-    status: {
-      type: String,
-      enum: ['available', 'unavailable'],
-      default: 'available',
-      required: true,
-    },
-    features: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
-    pricePerHour: {
+    ratings: {
       type: Number,
       required: true,
     },
-    isDeleted: {
-      type: Boolean,
-      default: false,
+    imageUrl:{
+      type: String,
+      required: true,
     },
+    featured: {
+      type: Boolean,
+      default: false
+    },
+    recommended: {
+      type: Boolean,
+      default: false
+    } 
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields
   },
 );
 
-export const Car = mongoose.model<TCar>('Car', carSchema);
+export const Product = mongoose.model<TProduct>('Product', productSchema);

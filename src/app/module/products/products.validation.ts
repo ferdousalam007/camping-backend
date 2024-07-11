@@ -1,43 +1,36 @@
 import { z } from 'zod';
 
-//car validation schema
-export const createCarValidationSchema = z.object({
+//product create validation schema
+export const createProductValidationSchema = z.object({
   body: z.object({
-    name: z.string({ required_error: 'Name is required' }),
-    description: z.string({ required_error: 'Description is required' }),
-    color: z.string({ required_error: 'Color is required' }),
-    isElectric: z.boolean({ required_error: 'isElectric is required' }),
-    features: z.array(z.string(), { required_error: 'Features is required' }),
-    pricePerHour: z.number({
-      required_error: 'Price per hour is required',
-      invalid_type_error: 'Price per hour must be a number',
-    }),
+    name: z.string().min(1),
+    price: z.number().min(0),
+    stock: z.number().min(0),
+    description: z.string().min(1),
+    category: z.string().min(1),
+    ratings: z.number().min(0).max(5).optional(),
+    imageUrl: z.any(),
+    featured: z.boolean().optional(),
+    recommended: z.boolean().optional(),
   }),
 });
-//car update validation schema
-export const updatedCarValidationSchema = z.object({
+//product update validation schema
+export const updatedProductValidationSchema = z.object({
   body: z.object({
-    name: z.string({ required_error: 'Name is required' }).optional(),
-    description: z
-      .string({ required_error: 'Description is required' })
-      .optional(),
-    color: z.string({ required_error: 'Color is required' }).optional(),
-    isElectric: z
-      .boolean({ required_error: 'isElectric is required' })
-      .optional(),
-    features: z
-      .array(z.string(), { required_error: 'Features is required' })
-      .optional(),
-    pricePerHour: z
-      .number({
-        required_error: 'Price per hour is required',
-        invalid_type_error: 'Price per hour must be a number',
-      })
-      .optional(),
+    name: z.string().min(1).optional(),
+    price: z.number().min(0).optional(),
+    stock: z.number().min(0).optional(),
+    description: z.string().min(1).optional(),
+    category: z.string().min(1).optional(),
+    ratings: z.number().min(0).max(5).optional(),
+    // imageUrl: z.string().url().min(1).max(1).optional(),
+    featured: z.boolean().optional(),
+    recommended: z.boolean().optional(),
+
   }),
 });
 
-export const carValidations = {
-  createCarValidationSchema,
-  updatedCarValidationSchema,
+export const productValidations = {
+  createProductValidationSchema,
+  updatedProductValidationSchema,
 };
