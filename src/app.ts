@@ -11,10 +11,16 @@ import notFound from './app/middlewares/notFound';
 import router from './app/routes';
 
 const app: Application = express();
-
+// Enable CORS for specific origins
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
 //parsers
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(fileUpload({
   useTempFiles: true,
   tempFileDir: '/tmp/',
