@@ -10,17 +10,17 @@ const createProduct = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: 'Car created successfully',
+    message: 'Product created successfully',
     data: result,
   });
 });
 //get all product
 const getAllProducts = catchAsync(async (req, res) => {
-  const result = await ProductService.getAllProductsFromDB();
+  const result = await ProductService.getAllProductsFromDB(req,res);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Cars fetched successfully',
+    message: 'product fetched successfully',
     data: result,
   });
 });
@@ -40,7 +40,7 @@ const getAProduct = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Car retrieved successfully',
+    message: 'Product retrieved successfully',
     data: result,
   });
 })
@@ -60,7 +60,7 @@ const updateProduct = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Car updated successfully',
+    message: 'Product updated successfully',
     data: result,
   });
 })

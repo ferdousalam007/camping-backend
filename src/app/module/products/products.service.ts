@@ -12,7 +12,7 @@ import { Category } from '../category/category.model';
 import { Product } from './products.model';
 import { TProduct } from './products.interface';
 //create a product into database
-const createProductIntoDB = async (req: any,res:any) => {
+const createProductIntoDB = async (req: any, res: any) => {
   const parsedProduct = req.body;
   if (!req.files || !req.files.image) {
     return res.status(400).json({ message: 'Image file is required' });
@@ -34,21 +34,42 @@ const createProductIntoDB = async (req: any,res:any) => {
     imageUrl: result.secure_url,
   });
 
- const newResult= (await newProduct.save()).populate('category');
+  const newResult = (await newProduct.save()).populate('category');
 
   return newResult;
 };
 
 //get all product from database
-const getAllProductsFromDB = async () => {
-  const result = await Product.find().populate('category');
+const getAllProductsFromDB = async (req: any, res: any) => {
+  const { search, category, minPrice, maxPrice, sort, page = 1, limit = 10 } = req.query;
+  const query: any = {};
+
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
+    ];
+  }
+  if (category) query.category = category;
+  if (minPrice) query.price = { ...query.price, $gte: +minPrice };
+  if (maxPrice) query.price = { ...query.price, $lte: +maxPrice };
+
+  const total = await Product.countDocuments(query);
+  const result = await Product.find(query).populate('category')
+    .sort({ price: sort === 'asc' ? 1 : -1 })
+    .skip((+page - 1) * +limit)
+    .limit(+limit);
+
+
   if (!result) {
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Something went wrong',
     );
   }
-  return result;
+
+  return ({ result, total, page: +page, limit: +limit });
+
 };
 
 //get single product from database
