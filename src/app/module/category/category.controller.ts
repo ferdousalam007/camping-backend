@@ -2,7 +2,6 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { CategoryServices } from "./category.service";
-import { ICategory } from "./category.interface";
 
 const createCategory = catchAsync(async (req, res) => {
     const result = await CategoryServices.createCategoryIntoDB(req,res);

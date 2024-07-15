@@ -29,7 +29,7 @@ const getAllProducts = catchAsync(async (req, res) => {
 const getAProduct = catchAsync(async (req, res) => {
   const id = req.params.id;
   const result = await ProductService.getAProductFromDB(id);
-  if (!result || result.isDeleted === true) {
+  if (!result) {
     return sendResponse(res, {
       statusCode: httpStatus.NOT_FOUND,
       success: false,
