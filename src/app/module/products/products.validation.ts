@@ -23,7 +23,7 @@ export const updatedProductValidationSchema = z.object({
     description: z.string().min(1).optional(),
     category: z.string().min(1).optional(),
     ratings: z.number().min(0).max(5).optional(),
-    // imageUrl: z.string().url().min(1).max(1).optional(),
+    imageUrl: z.any().optional(),
     featured: z.boolean().optional(),
     recommended: z.boolean().optional(),
 

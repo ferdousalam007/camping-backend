@@ -23,6 +23,8 @@ router.put(
   validateRequest(productValidations.updatedProductValidationSchema),
   ProductController.updateProduct,
 );
+//delete product route
+router.delete('/:id', ProductController.deleteProduct);
 
 //delete product route
 // router.delete('/:id', ProductController.deleteProduct);

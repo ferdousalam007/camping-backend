@@ -16,7 +16,7 @@ const createProduct = catchAsync(async (req, res) => {
 });
 //get all product
 const getAllProducts = catchAsync(async (req, res) => {
-  const result = await ProductService.getAllProductsFromDB(req,res);
+  const result = await ProductService.getAllProductsFromDB(req, res);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -48,6 +48,7 @@ const getAProduct = catchAsync(async (req, res) => {
 //update product
 const updateProduct = catchAsync(async (req, res) => {
   const id = req.params.id;
+
   const result = await ProductService.updateProductIntoDB(id, req, res);
   if (!result) {
     return sendResponse(res, {
@@ -63,7 +64,50 @@ const updateProduct = catchAsync(async (req, res) => {
     message: 'Product updated successfully',
     data: result,
   });
-})
+});
+
+//delete product
+const deleteProduct = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await ProductService.deleteProductFromDB(id);
+  if (!result) {
+    return sendResponse(res, {
+      statusCode: httpStatus.NOT_FOUND,
+      success: false,
+      message: 'No Data Found',
+      data: [],
+    });
+  }
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Product deleted successfully',
+    data: result,
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //get all car
 // const getAllCars = catchAsync(async (req, res) => {
@@ -172,4 +216,5 @@ export const ProductController = {
   getAllProducts,
   getAProduct,
   updateProduct,
+  deleteProduct,
 };

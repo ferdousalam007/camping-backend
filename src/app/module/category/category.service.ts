@@ -13,7 +13,10 @@ const createCategoryIntoDB = async (req: any, res: any) => {
     // Check for duplicate category name
     const existingCategory = await Category.findOne({ name: parsedCategory.name });
     if (existingCategory) {
-        return res.status(400).json({ message: 'Category name already exists' });
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Category already exists',
+        );
     }
 
     // Validate image file

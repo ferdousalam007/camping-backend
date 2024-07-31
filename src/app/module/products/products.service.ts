@@ -86,13 +86,52 @@ const getAProductFromDB = async (id: string) => {
 //update product into database
 const updateProductIntoDB = async (id: string, req: any, res: any) => {
   const parsedProduct = req.body;
-  const categoryExists = await Category.findById(parsedProduct.category);
-  if (!categoryExists) {
-    return res.status(400).json({ message: 'Category does not exist' });
+
+  // Check if there's an image to upload
+  if (req.files && req.files.image) {
+    const image = req.files.image as any; 
+
+    // Upload the image to Cloudinary
+    const result = await cloudinary.uploader.upload(image.tempFilePath, {
+      folder: 'campers-shop/products',
+      public_id: uuidv4(),
+    });
+
+    // Update the product with the new image URL
+    parsedProduct.imageUrl = result.secure_url;
   }
-  const result = await Product.findByIdAndUpdate(id, parsedProduct, {
-    new: true,
+
+  // Find the existing product by ID
+  const productExists = await Product.findById(id);
+
+  if (!productExists) {
+    return res.status(404).json({ message: 'Product not found' });
+  }
+
+  // Update the product with the new data
+  const updatedProduct = await Product.findByIdAndUpdate(id, parsedProduct, {
+    new: true, // Return the updated document
+    runValidators: true, // Apply validators to the updated document
   }).populate('category');
+
+  if (!updatedProduct) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Something went wrong',
+    );
+  }
+
+  return updatedProduct;
+};
+
+//delete single products into database
+const deleteProductFromDB=async(id:string)=>{
+  const findProduct=await Product.findById(id);
+  if(!findProduct){
+    throw new AppError(httpStatus.NOT_FOUND,'Product not found');
+  }
+  const result =await Product.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+  // const result = await Product.findByIdAndDelete(id);
   if (!result) {
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
@@ -102,11 +141,11 @@ const updateProductIntoDB = async (id: string, req: any, res: any) => {
   return result;
 }
 
-
 // export all functions
 export const ProductService = {
   createProductIntoDB,
   getAllProductsFromDB,
   getAProductFromDB,
-  updateProductIntoDB
+  updateProductIntoDB,
+  deleteProductFromDB,
 };

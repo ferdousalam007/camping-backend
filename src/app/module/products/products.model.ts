@@ -41,7 +41,15 @@ const productSchema = new Schema<TProduct>(
     recommended: {
       type: Boolean,
       default: false
-    } 
+    } ,
+    isDeleted: {
+      type: Boolean,
+      default: false
+    },
+    totalSold: {
+      type: Number,
+      default: 0
+    }
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields

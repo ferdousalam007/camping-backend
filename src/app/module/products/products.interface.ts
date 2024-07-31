@@ -12,5 +12,7 @@ export type TProduct = {
   imageUrl: string;
   featured?: boolean;
   recommended?: boolean;
+  isDeleted?: boolean;
+  totalSold?: number;
 };
 
