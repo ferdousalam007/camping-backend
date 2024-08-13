@@ -31,7 +31,7 @@ const productSchema = new Schema<TProduct>(
       required: true,
     },
     imageUrl:{
-      type: String,
+      type: [String],
       required: true,
     },
     featured: {

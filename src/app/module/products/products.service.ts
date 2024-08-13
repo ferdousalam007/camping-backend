@@ -13,16 +13,26 @@ import { Product } from './products.model';
 import { TProduct } from './products.interface';
 //create a product into database
 const createProductIntoDB = async (req: any, res: any) => {
-  const parsedProduct = req.body;
-  if (!req.files || !req.files.image) {
-    return res.status(400).json({ message: 'Image file is required' });
+  
+  const parsedProduct =req.body;
+// return
+  if (!req.files || !req.files.images) {
+    return res.status(400).json({ message: 'Image files are required' });
   }
 
-  const image = req.files.image as any; // Type assertion to any
-  const result = await cloudinary.uploader.upload(image.tempFilePath, {
-    folder: 'campers-shop/products',
-    public_id: uuidv4(),
-  });
+  let images = req.files.images as any[]; // Type assertion to array
+  if (!Array.isArray(images)) {
+    images = [images];
+  }
+  const imageUrls = await Promise.all(
+    images.map(async (image: any) => {
+      const result = await cloudinary.uploader.upload(image.tempFilePath, {
+        folder: 'campers-shop/products',
+        public_id: uuidv4(),
+      });
+      return result.secure_url;
+    })
+  );
 
   const categoryExists = await Category.findById(parsedProduct.category);
   if (!categoryExists) {
@@ -31,7 +41,7 @@ const createProductIntoDB = async (req: any, res: any) => {
 
   const newProduct = new Product({
     ...parsedProduct,
-    imageUrl: result.secure_url,
+    imageUrl: imageUrls, // Store an array of image URLs
   });
 
   const newResult = (await newProduct.save()).populate('category');
@@ -60,7 +70,6 @@ const getAllProductsFromDB = async (req: any, res: any) => {
     .skip((+page - 1) * +limit)
     .limit(+limit);
 
-
   if (!result) {
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
@@ -68,8 +77,20 @@ const getAllProductsFromDB = async (req: any, res: any) => {
     );
   }
 
-  return ({ result, total, page: +page, limit: +limit });
+  // Find the minimum and maximum priced products
+  // Find the minimum and maximum prices from the results
+  const minPriceProduct = result.length > 0 ? Math.min(...result.map(product => product.price)) : null;
+  const maxPriceProduct = result.length > 0 ? Math.max(...result.map(product => product.price)) : null;
 
+  return ({
+    result,
+    total,
+    minPriceProduct,
+    maxPriceProduct,
+    page: +page,
+    limit: +limit,
+ 
+  });
 };
 
 //get single product from database
@@ -87,18 +108,28 @@ const getAProductFromDB = async (id: string) => {
 const updateProductIntoDB = async (id: string, req: any, res: any) => {
   const parsedProduct = req.body;
 
-  // Check if there's an image to upload
-  if (req.files && req.files.image) {
-    const image = req.files.image as any; 
+  // Check if there are images to upload
+  if (req.files && req.files.images) {
+    let images = req.files.images as any[];
 
-    // Upload the image to Cloudinary
-    const result = await cloudinary.uploader.upload(image.tempFilePath, {
-      folder: 'campers-shop/products',
-      public_id: uuidv4(),
-    });
+    // Ensure images is an array
+    if (!Array.isArray(images)) {
+      images = [images];
+    }
 
-    // Update the product with the new image URL
-    parsedProduct.imageUrl = result.secure_url;
+    // Upload each image to Cloudinary
+    const imageUrls = await Promise.all(
+      images.map(async (image: any) => {
+        const result = await cloudinary.uploader.upload(image.tempFilePath, {
+          folder: 'campers-shop/products',
+          public_id: uuidv4(),
+        });
+        return result.secure_url;
+      })
+    );
+
+    // Update the product with the new array of image URLs
+    parsedProduct.imageUrl = imageUrls;
   }
 
   // Find the existing product by ID

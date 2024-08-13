@@ -9,7 +9,7 @@ export type TProduct = {
   description?: string; 
   category: Types.ObjectId; 
   ratings: number; 
-  imageUrl: string;
+  imageUrl: string[];
   featured?: boolean;
   recommended?: boolean;
   isDeleted?: boolean;
