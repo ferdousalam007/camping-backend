@@ -26,7 +26,6 @@ export const updatedProductValidationSchema = z.object({
     imageUrl: z.any().optional(),
     featured: z.boolean().optional(),
     recommended: z.boolean().optional(),
-
   }),
 });
 

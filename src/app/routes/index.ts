@@ -6,7 +6,6 @@ import { OrderRoutes } from '../module/order/order.routes';
 const router = Router();
 
 const moduleRoutes = [
-  
   {
     path: '/category',
     route: CategoryRoutes,

@@ -6,9 +6,9 @@ const router = express.Router();
 
 //create order route
 router.post(
-    '/',
-    validateRequest(orderValidations.createOrderValidationSchema),
-    OrderController.createOrder,
+  '/',
+  validateRequest(orderValidations.createOrderValidationSchema),
+  OrderController.createOrder,
 );
 
 //get all order route

@@ -1,4 +1,4 @@
 export type ICategory = {
-    name: string;
-    imageUrl: string;
+  name: string;
+  imageUrl: string;
 };

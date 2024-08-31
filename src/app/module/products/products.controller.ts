@@ -43,7 +43,7 @@ const getAProduct = catchAsync(async (req, res) => {
     message: 'Product retrieved successfully',
     data: result,
   });
-})
+});
 
 //update product
 const updateProduct = catchAsync(async (req, res) => {
@@ -85,29 +85,6 @@ const deleteProduct = catchAsync(async (req, res) => {
     data: result,
   });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //get all car
 // const getAllCars = catchAsync(async (req, res) => {

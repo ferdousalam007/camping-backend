@@ -23,33 +23,33 @@ const productSchema = new Schema<TProduct>(
     },
     category: {
       type: Schema.Types.ObjectId,
-      ref: 'Category', 
+      ref: 'Category',
       required: true,
     },
     ratings: {
       type: Number,
       required: true,
     },
-    imageUrl:{
+    imageUrl: {
       type: [String],
       required: true,
     },
     featured: {
       type: Boolean,
-      default: false
+      default: false,
     },
     recommended: {
       type: Boolean,
-      default: false
-    } ,
+      default: false,
+    },
     isDeleted: {
       type: Boolean,
-      default: false
+      default: false,
     },
     totalSold: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields

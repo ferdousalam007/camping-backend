@@ -21,10 +21,12 @@ const corsOptions = {
 //parsers
 app.use(express.json());
 app.use(cors(corsOptions));
-app.use(fileUpload({
-  useTempFiles: true,
-  tempFileDir: '/tmp/',
-}));
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+  }),
+);
 // application routes
 app.use('/api', router);
 // Route handler for the root URL ('/')

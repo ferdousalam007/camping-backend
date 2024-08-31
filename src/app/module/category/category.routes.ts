@@ -6,9 +6,9 @@ const router = express.Router();
 
 //create category route
 router.post(
-    '/',
-    validateRequest(categoryValidations.createCategoryValidationSchema),
-    CategoryController.createCategory,
+  '/',
+  validateRequest(categoryValidations.createCategoryValidationSchema),
+  CategoryController.createCategory,
 );
 //get all category route
 router.get('/', CategoryController.getAllCategories);

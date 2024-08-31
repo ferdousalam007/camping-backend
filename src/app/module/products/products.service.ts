@@ -13,9 +13,8 @@ import { Product } from './products.model';
 import { TProduct } from './products.interface';
 //create a product into database
 const createProductIntoDB = async (req: any, res: any) => {
-  
-  const parsedProduct =req.body;
-// return
+  const parsedProduct = req.body;
+  // return
   if (!req.files || !req.files.images) {
     return res.status(400).json({ message: 'Image files are required' });
   }
@@ -31,7 +30,7 @@ const createProductIntoDB = async (req: any, res: any) => {
         public_id: uuidv4(),
       });
       return result.secure_url;
-    })
+    }),
   );
 
   const categoryExists = await Category.findById(parsedProduct.category);
@@ -51,9 +50,17 @@ const createProductIntoDB = async (req: any, res: any) => {
 
 //get all product from database
 const getAllProductsFromDB = async (req: any, res: any) => {
-  const { search, category, minPrice, maxPrice, sort, page = 1, limit = 10 } = req.query;
-  const query: any = {};
-
+  const {
+    search,
+    category,
+    minPrice,
+    maxPrice,
+    sort,
+    page = 1,
+    limit = 10,
+  } = req.query;
+  // const query: any = {};
+  const query: any = { isDeleted: false };
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: 'i' } },
@@ -65,7 +72,8 @@ const getAllProductsFromDB = async (req: any, res: any) => {
   if (maxPrice) query.price = { ...query.price, $lte: +maxPrice };
 
   const total = await Product.countDocuments(query);
-  const result = await Product.find(query).populate('category')
+  const result = await Product.find(query)
+    .populate('category')
     .sort({ price: sort === 'asc' ? 1 : -1 })
     .skip((+page - 1) * +limit)
     .limit(+limit);
@@ -79,18 +87,23 @@ const getAllProductsFromDB = async (req: any, res: any) => {
 
   // Find the minimum and maximum priced products
   // Find the minimum and maximum prices from the results
-  const minPriceProduct = result.length > 0 ? Math.min(...result.map(product => product.price)) : null;
-  const maxPriceProduct = result.length > 0 ? Math.max(...result.map(product => product.price)) : null;
+  const minPriceProduct =
+    result.length > 0
+      ? Math.min(...result.map((product) => product.price))
+      : null;
+  const maxPriceProduct =
+    result.length > 0
+      ? Math.max(...result.map((product) => product.price))
+      : null;
 
-  return ({
+  return {
     result,
     total,
     minPriceProduct,
     maxPriceProduct,
     page: +page,
     limit: +limit,
- 
-  });
+  };
 };
 
 //get single product from database
@@ -103,7 +116,7 @@ const getAProductFromDB = async (id: string) => {
     );
   }
   return result;
-}
+};
 //update product into database
 const updateProductIntoDB = async (id: string, req: any, res: any) => {
   const parsedProduct = req.body;
@@ -125,7 +138,7 @@ const updateProductIntoDB = async (id: string, req: any, res: any) => {
           public_id: uuidv4(),
         });
         return result.secure_url;
-      })
+      }),
     );
 
     // Update the product with the new array of image URLs
@@ -156,12 +169,16 @@ const updateProductIntoDB = async (id: string, req: any, res: any) => {
 };
 
 //delete single products into database
-const deleteProductFromDB=async(id:string)=>{
-  const findProduct=await Product.findById(id);
-  if(!findProduct){
-    throw new AppError(httpStatus.NOT_FOUND,'Product not found');
+const deleteProductFromDB = async (id: string) => {
+  const findProduct = await Product.findById(id);
+  if (!findProduct) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
   }
-  const result =await Product.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+  const result = await Product.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true },
+  );
   // const result = await Product.findByIdAndDelete(id);
   if (!result) {
     throw new AppError(
@@ -170,7 +187,7 @@ const deleteProductFromDB=async(id:string)=>{
     );
   }
   return result;
-}
+};
 
 // export all functions
 export const ProductService = {
