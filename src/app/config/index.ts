@@ -10,4 +10,5 @@ export default {
   clnary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   clnary_api_key: process.env.CLOUDINARY_API_KEY,
   clnary_api_secret: process.env.CLOUDINARY_API_SECRET,
+  frontend_url: process.env.FRONTEND_URL,
 };

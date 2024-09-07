@@ -9,11 +9,11 @@ import fileUpload from 'express-fileupload';
 import globalErrorHandler from './app/middlewares/globalErrorhandler';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
-
+import config from './app/config';
 const app: Application = express();
 // Enable CORS for specific origins
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: config.frontend_url,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
