@@ -1,18 +1,28 @@
-# camping-backend
+# Camping Backend
 
-This is a backend application for a camping website. It is built with Node.js, Express, TypeScript, and MongoDB.
+This is the backend for a camping website. It is built with Node.js, Express, TypeScript, and MongoDB.
 
 ## Features
 
-- **Product Management:** Create, read, update, and delete products.
-- **Category Management:** Create, read, and get categories.
-- **Order Management:** Create and read orders.
+* **Product Management:**
+    * Create, read, update, and delete products.
+    * Upload product images using Cloudinary.
+    * Filter products by category.
+* **Category Management:**
+    * Create, read, update, and delete categories.
+    * Upload category images using Cloudinary.
+* **Order Management:**
+    * Create orders.
+    * View order history.
 
+## Live link
+
+[live link](https://camping-backend-jet.vercel.app/)
 ## Getting Started
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/camping-backend.git
+   git clone https://github.com/ferdousalam007/camping-backend.git
    ```
 
 2. **Install dependencies:**
@@ -21,37 +31,24 @@ This is a backend application for a camping website. It is built with Node.js, E
    ```
 
 3. **Set up environment variables:**
-   - Create a `.env` file in the root directory.
-   - Add the following environment variables:
-     ```
-     NODE_ENV=development
-     PORT=3000
-     DATABASE_URL=mongodb://localhost:27017/camping-backend
-     CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
-     CLOUDINARY_API_KEY=your-cloudinary-api-key
-     CLOUDINARY_API_SECRET=your-cloudinary-api-secret
-     FRONTEND_URL=http://localhost:3001
-     ```
+   Create a `.env` file in the root directory and add the following environment variables:
 
-4. **Start the development server:**
+   ```
+   NODE_ENV=development
+   PORT=3000
+   DATABASE_URL=mongodb://localhost:27017/camping-backend
+   CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+   CLOUDINARY_API_KEY=your-cloudinary-api-key
+   CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+   FRONTEND_URL=http://localhost:3001
+   ```
+
+4. **Start the server:**
    ```bash
    npm run start:dev
    ```
 
-## Running Tests
 
-This project does not have any tests yet.
-
-## Deployment
-
-This project can be deployed to Vercel.
-
-1. **Create a Vercel account:** [https://vercel.com/](https://vercel.com/)
-2. **Deploy the project:**
-   ```bash
-   npm run build
-   vercel
-   ```
 
 ## Contributing
 
