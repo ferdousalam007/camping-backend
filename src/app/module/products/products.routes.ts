@@ -13,7 +13,8 @@ router.post(
 );
 //get all product route
 router.get('/', ProductController.getAllProducts);
-
+//get all product without query
+router.get('/all', ProductController.getAllProductsWithoutQuery);
 //get single product route
 router.get('/:id', ProductController.getAProduct);
 
@@ -26,26 +27,7 @@ router.put(
 //delete product route
 router.delete('/:id', ProductController.deleteProduct);
 
-//delete product route
-// router.delete('/:id', ProductController.deleteProduct);
 
-//get all car by all
-// router.get('/', carController.getAllCars);
-
-//return car by admin
-
-//update car by admin
-// router.put(
-//   '/:id',
-
-//   validateRequest(productValidations.updatedProductValidationSchema),
-//   carController.updateCar,
-// );
-//get single car by all
-// router.get('/:id', carController.getACar);
-
-//delete car by admin
-// router.delete('/:id', carController.deleteACarIntoDB);
 
 //export car routes
 export const ProductRoutes = router;

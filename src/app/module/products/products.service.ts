@@ -47,6 +47,17 @@ const createProductIntoDB = async (req: any, res: any) => {
 
   return newResult;
 };
+//get all product without query
+const getAllProductsWithoutQuery = async () => {
+  const result = await Product.find({ isDeleted: false }).populate('category');
+  if (!result) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Something went wrong',
+    );
+  }
+  return result;
+};
 
 //get all product from database
 const getAllProductsFromDB = async (req: any, res: any) => {
@@ -64,7 +75,7 @@ const getAllProductsFromDB = async (req: any, res: any) => {
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } },
+      // { description: { $regex: search, $options: 'i' } },
     ];
   }
   if (category) query.category = category;
@@ -192,6 +203,7 @@ const deleteProductFromDB = async (id: string) => {
 // export all functions
 export const ProductService = {
   createProductIntoDB,
+  getAllProductsWithoutQuery,
   getAllProductsFromDB,
   getAProductFromDB,
   updateProductIntoDB,

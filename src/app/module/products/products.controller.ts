@@ -14,6 +14,17 @@ const createProduct = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+//get all product without query
+const getAllProductsWithoutQuery = catchAsync(async (req, res) => {
+  const result = await ProductService.getAllProductsWithoutQuery();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'product fetched successfully',
+    data: result,
+  });
+});
 //get all product
 const getAllProducts = catchAsync(async (req, res) => {
   const result = await ProductService.getAllProductsFromDB(req, res);
@@ -191,6 +202,7 @@ const deleteProduct = catchAsync(async (req, res) => {
 export const ProductController = {
   createProduct,
   getAllProducts,
+  getAllProductsWithoutQuery,
   getAProduct,
   updateProduct,
   deleteProduct,
